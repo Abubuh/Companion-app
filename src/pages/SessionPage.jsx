@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ConnectivityBanner } from "../components/ui/ConnectivityBanner";
 import { Timer } from "../components/ui/Timer";
 import { StateSheet } from "../components/StateSheet";
+import { useSession } from "../context/SessionContext";
 
 const DEVICES = {
   "kit-01": { name: "Kit-01", description: "Escáner LiDAR · v2" },
@@ -15,27 +16,16 @@ export function SessionPage() {
   const navigate = useNavigate();
   const device = DEVICES[deviceId];
 
-  const [isRunning, setIsRunning] = useState(false);
-  const [seconds, setSeconds] = useState(0);
+  const { seconds, isRunning, startedAt, startSession, stopSession, clearSession } = useSession(deviceId);
   const [showSheet, setShowSheet] = useState(false);
-  const intervalRef = useRef(null);
-  const startedAtRef = useRef(null);
 
   const isOnline = true;
 
-  useEffect(() => {
-    return () => clearInterval(intervalRef.current);
-  }, []);
-
   function handleToggle() {
     if (!isRunning) {
-      startedAtRef.current = new Date().toISOString();
-      setSeconds(0);
-      setIsRunning(true);
-      intervalRef.current = setInterval(() => setSeconds((s) => s + 1), 1000);
+      startSession();
     } else {
-      clearInterval(intervalRef.current);
-      setIsRunning(false);
+      stopSession();
       setShowSheet(true);
     }
   }
@@ -43,19 +33,20 @@ export function SessionPage() {
   function handleSave(incidentType) {
     const payload = {
       device_id: deviceId,
-      started_at: startedAtRef.current,
+      started_at: startedAt,
       ended_at: new Date().toISOString(),
       duration_seconds: seconds,
       status: incidentType,
     };
     console.log("[POST /api/v1/sessions] Payload:", JSON.stringify(payload, null, 2));
+    clearSession();
     setShowSheet(false);
     navigate("/");
   }
 
   function handleDiscard() {
+    clearSession();
     setShowSheet(false);
-    setSeconds(0);
     navigate("/");
   }
 

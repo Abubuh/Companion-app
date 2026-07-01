@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ConnectivityBanner } from "../components/ui/ConnectivityBanner";
 import { DeviceCard } from "../components/DeviceCard";
+import { useSession } from "../context/SessionContext";
 
 const DEVICES = [
   { id: "kit-01", name: "Kit-01", description: "Escáner LiDAR · v2" },
@@ -12,6 +13,7 @@ const DEVICES = [
 export function DeviceListPage() {
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
+  const { allSessions } = useSession();
   const isOnline = true;
 
   return (
@@ -28,6 +30,7 @@ export function DeviceListPage() {
             device={device}
             selected={selected?.id === device.id}
             onSelect={setSelected}
+            hasActiveSession={!!allSessions[device.id]?.isRunning}
           />
         ))}
       </div>
@@ -41,7 +44,7 @@ export function DeviceListPage() {
             : "bg-muted text-muted-text cursor-not-allowed"
         }`}
       >
-        Seleccionar
+        {selected && allSessions[selected.id]?.isRunning ? "Retomar sesión" : "Seleccionar"}
       </button>
     </div>
   );

@@ -1,4 +1,4 @@
-export function DeviceCard({ device, selected, onSelect }) {
+export function DeviceCard({ device, selected, onSelect, hasActiveSession }) {
   return (
     <button
       onClick={() => onSelect(device)}
@@ -18,6 +18,13 @@ export function DeviceCard({ device, selected, onSelect }) {
         <p className="text-xl font-semibold text-ink leading-tight">{device.name}</p>
         <p className="text-lg text-ink-subtle">{device.description}</p>
       </div>
+
+      {hasActiveSession && (
+        <span className="flex items-center gap-1 text-xs font-semibold text-danger">
+          <span className="w-1.5 h-1.5 rounded-full bg-danger animate-pulse" />
+          En curso
+        </span>
+      )}
     </button>
   );
 }
