@@ -1,12 +1,17 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { DeviceListPage } from "./pages/DeviceListPage";
+import { SessionPage } from "./pages/SessionPage";
+
 function App() {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <h1 className="text-green-300">Hello world</h1>
-        </div>
-      </section>
-    </>
+    <BrowserRouter>
+      <div className="min-h-dvh bg-background flex items-center justify-center">
+        <Routes>
+          <Route path="/" element={<DeviceListPage />} />
+          <Route path="/session/:deviceId" element={<SessionPage />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
 
