@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ConnectivityBanner } from "../components/ui/ConnectivityBanner";
 import { DeviceCard } from "../components/DeviceCard";
 import { useSession } from "../context/SessionContext";
+import { useConnectivity } from "../hooks/useConnectivity";
 
 const DEVICES = [
   { id: "kit-01", name: "Kit-01", description: "Escáner LiDAR · v2" },
@@ -14,7 +15,7 @@ export function DeviceListPage() {
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
   const { allSessions } = useSession();
-  const isOnline = true;
+  const { isOnline } = useConnectivity();
 
   return (
     <div className="flex flex-col h-dvh w-full px-10 pb-4 pt-10">

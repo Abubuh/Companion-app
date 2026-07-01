@@ -4,6 +4,7 @@ import { ConnectivityBanner } from "../components/ui/ConnectivityBanner";
 import { Timer } from "../components/ui/Timer";
 import { StateSheet } from "../components/StateSheet";
 import { useSession } from "../context/SessionContext";
+import { useConnectivity } from "../hooks/useConnectivity";
 
 const DEVICES = {
   "kit-01": { name: "Kit-01", description: "Escáner LiDAR · v2" },
@@ -19,7 +20,7 @@ export function SessionPage() {
   const { seconds, isRunning, startedAt, startSession, stopSession, clearSession } = useSession(deviceId);
   const [showSheet, setShowSheet] = useState(false);
 
-  const isOnline = true;
+  const { isOnline } = useConnectivity();
 
   function handleToggle() {
     if (!isRunning) {
