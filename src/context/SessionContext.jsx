@@ -1,18 +1,67 @@
-import { createContext, useContext, useRef, useState, useCallback } from "react";
+import { createContext, useContext, useRef, useState, useCallback, useEffect } from "react";
+
+const SESSION_STORAGE_KEY = "active_sessions";
+
+function getStoredSessions() {
+  try {
+    return JSON.parse(localStorage.getItem(SESSION_STORAGE_KEY) ?? "{}");
+  } catch {
+    return {};
+  }
+}
+
+function persistSessions(sessions) {
+  localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(sessions));
+}
+
+function calcSeconds(startedAt) {
+  return Math.floor((Date.now() - new Date(startedAt).getTime()) / 1000);
+}
 
 const SessionContext = createContext(null);
 
 export function SessionProvider({ children }) {
-  const [sessions, setSessions] = useState({});
+  const [sessions, setSessions] = useState(() => {
+    const stored = getStoredSessions();
+    const restored = {};
+    for (const [id, session] of Object.entries(stored)) {
+      restored[id] = {
+        ...session,
+        seconds: session.isRunning ? calcSeconds(session.startedAt) : session.seconds,
+      };
+    }
+    return restored;
+  });
+
   const intervals = useRef({});
+
+  useEffect(() => {
+    setSessions((prev) => {
+      for (const [id, session] of Object.entries(prev)) {
+        if (session.isRunning && !intervals.current[id]) {
+          intervals.current[id] = setInterval(() => {
+            setSessions((s) => ({
+              ...s,
+              [id]: { ...s[id], seconds: (s[id]?.seconds ?? 0) + 1 },
+            }));
+          }, 1000);
+        }
+      }
+      return prev;
+    });
+  }, []);
 
   const startSession = useCallback((deviceId) => {
     if (intervals.current[deviceId]) return;
     const startedAt = new Date().toISOString();
-    setSessions((prev) => ({
-      ...prev,
-      [deviceId]: { seconds: 0, isRunning: true, startedAt },
-    }));
+    setSessions((prev) => {
+      const updated = {
+        ...prev,
+        [deviceId]: { seconds: 0, isRunning: true, startedAt },
+      };
+      persistSessions(updated);
+      return updated;
+    });
     intervals.current[deviceId] = setInterval(() => {
       setSessions((prev) => ({
         ...prev,
@@ -24,10 +73,14 @@ export function SessionProvider({ children }) {
   const stopSession = useCallback((deviceId) => {
     clearInterval(intervals.current[deviceId]);
     delete intervals.current[deviceId];
-    setSessions((prev) => ({
-      ...prev,
-      [deviceId]: { ...prev[deviceId], isRunning: false },
-    }));
+    setSessions((prev) => {
+      const updated = {
+        ...prev,
+        [deviceId]: { ...prev[deviceId], isRunning: false },
+      };
+      persistSessions(updated);
+      return updated;
+    });
   }, []);
 
   const clearSession = useCallback((deviceId) => {
@@ -36,6 +89,7 @@ export function SessionProvider({ children }) {
     setSessions((prev) => {
       const next = { ...prev };
       delete next[deviceId];
+      persistSessions(next);
       return next;
     });
   }, []);
