@@ -1,17 +1,33 @@
-# React + Vite
+# Companion App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+App móvil para operadores de campo que recolectan datos espaciales con kits de hardware. Reemplaza libretas de papel registrando sesiones con: equipo usado, duración e incidentes.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 + Vite 8
+- Tailwind CSS v4
+- react-router-dom v7
 
-## React Compiler
+## Requisitos
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js 18 o superior
+- npm 9 o superior
 
-## Expanding the ESLint configuration
+## Instalación
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# Companion-app
+```bash
+npm install
+```
+
+## Ejecutar en desarrollo
+
+```bash
+npm run dev
+```
+
+Abre http://localhost:5173 en el navegador. Para simular un dispositivo móvil usa DevTools (F12 → ícono de dispositivo móvil).
+
+## Notas
+
+- No hay servidor real — el API es un mock en memoria (`src/api/mock.js`)
+- Las sesiones activas sobreviven a refresh via `localStorage` (`active_sessions`)
