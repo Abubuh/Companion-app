@@ -5,6 +5,7 @@ import { Timer } from "../components/ui/Timer";
 import { StateSheet } from "../components/StateSheet";
 import { useSession } from "../context/SessionContext";
 import { useConnectivity } from "../hooks/useConnectivity";
+import { useOfflineQueue } from "../hooks/useOfflineQueue";
 import { submitSession } from "../api/sessions.api";
 
 const DEVICES = {
@@ -22,6 +23,7 @@ export function SessionPage() {
   const [showSheet, setShowSheet] = useState(false);
 
   const { isOnline } = useConnectivity();
+  const { enqueue } = useOfflineQueue();
 
   function handleToggle() {
     if (!isRunning) {
@@ -33,13 +35,20 @@ export function SessionPage() {
   }
 
   async function handleSave(incidentType) {
-    await submitSession({
+    const payload = {
       deviceId,
       startedAt,
       endedAt: new Date().toISOString(),
       durationSeconds: seconds,
       status: incidentType,
-    });
+    };
+
+    if (isOnline) {
+      await submitSession(payload);
+    } else {
+      enqueue(payload);
+    }
+
     clearSession();
     setShowSheet(false);
     navigate("/");

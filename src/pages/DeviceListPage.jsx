@@ -4,6 +4,7 @@ import { ConnectivityBanner } from "../components/ui/ConnectivityBanner";
 import { DeviceCard } from "../components/DeviceCard";
 import { useSession } from "../context/SessionContext";
 import { useConnectivity } from "../hooks/useConnectivity";
+import { useOfflineQueue } from "../hooks/useOfflineQueue";
 import { fetchDevices } from "../api/devices.api";
 
 export function DeviceListPage() {
@@ -12,6 +13,7 @@ export function DeviceListPage() {
   const navigate = useNavigate();
   const { allSessions } = useSession();
   const { isOnline } = useConnectivity();
+  const { pendingCount } = useOfflineQueue();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export function DeviceListPage() {
       <h1 className="text-3xl font-bold text-ink mt-1.5 mb-0.5">Equipos disponibles</h1>
       <p className="text-lg text-ink-subtle mb-3">Selecciona un kit para empezar</p>
 
-      <ConnectivityBanner isOnline={isOnline} />
+      <ConnectivityBanner isOnline={isOnline} pendingCount={pendingCount} />
     
       <div className="flex-1 overflow-y-auto">
         {
