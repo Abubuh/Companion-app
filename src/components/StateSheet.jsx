@@ -6,7 +6,7 @@ const INCIDENTS = [
   { id: "low_battery",    label: "Batería baja",     colorClass: "bg-offline-surface" },
 ];
 
-export function StateSheet({ deviceName, duration, isOnline, onSave, onDiscard }) {
+export function StateSheet({ deviceName, duration, isOnline, isSaving, onSave, onDiscard }) {
   const [selected, setSelected] = useState(new Set(["ok"]));
   const [confirmDiscard, setConfirmDiscard] = useState(false);
 
@@ -89,9 +89,12 @@ export function StateSheet({ deviceName, duration, isOnline, onSave, onDiscard }
 
         <button
           onClick={handleSave}
-          className="w-full rounded-2xl bg-ink text-white font-bold text-lg py-4 mt-1"
+          disabled={isSaving}
+          className={`w-full rounded-2xl text-white font-bold text-lg py-4 mt-1 transition-opacity ${
+            isSaving ? "bg-ink opacity-50" : "bg-ink"
+          }`}
         >
-          {isOnline ? "Enviar sesión" : "Guardar sesión"}
+          {isSaving ? "Guardando..." : isOnline ? "Enviar sesión" : "Guardar sesión"}
         </button>
 
         <p className="text-center text-sm mt-3 text-ink-subtle">

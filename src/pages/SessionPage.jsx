@@ -16,6 +16,7 @@ export function SessionPage() {
 
   const { seconds, isRunning, startedAt, startSession, stopSession, clearSession } = useSession(deviceId);
   const [showSheet, setShowSheet] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const { isOnline } = useConnectivity();
   const { enqueue, pendingCount } = useOfflineQueue();
@@ -30,6 +31,8 @@ export function SessionPage() {
   }
 
   async function handleSave(incidentType) {
+    if (isSaving) return;
+    setIsSaving(true);
     const payload = {
       deviceId,
       startedAt,
@@ -107,6 +110,7 @@ export function SessionPage() {
           deviceName={device.name}
           duration={seconds}
           isOnline={isOnline}
+          isSaving={isSaving}
           onSave={handleSave}
           onDiscard={handleDiscard}
         />
