@@ -7,13 +7,35 @@ const INCIDENTS = [
 ];
 
 export function StateSheet({ deviceName, duration, isOnline, onSave, onDiscard }) {
-  const [selected, setSelected] = useState("ok");
+  const [selected, setSelected] = useState(new Set(["ok"]));
   const [confirmDiscard, setConfirmDiscard] = useState(false);
 
   const fmt = (s) => {
     const pad = (n) => String(n).padStart(2, "0");
     return `${pad(Math.floor(s / 3600))}:${pad(Math.floor((s % 3600) / 60))}:${pad(s % 60)}`;
   };
+
+  function handleSelect(id) {
+    if (id === "ok") {
+      setSelected(new Set(["ok"]));
+      return;
+    }
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.delete("ok");
+      if (next.has(id)) {
+        next.delete(id);
+        if (next.size === 0) next.add("ok"); 
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
+  function handleSave() {
+    onSave([...selected]);
+  }
 
   if (confirmDiscard) {
     return (
@@ -53,9 +75,9 @@ export function StateSheet({ deviceName, duration, isOnline, onSave, onDiscard }
         {INCIDENTS.map((inc) => (
           <button
             key={inc.id}
-            onClick={() => setSelected(inc.id)}
+            onClick={() => handleSelect(inc.id)}
             className={`w-full flex items-center gap-3 border-[1.5px] rounded-2xl px-4 py-4 mb-3 text-left transition-colors ${
-              selected === inc.id
+              selected.has(inc.id)
                 ? "border-brand bg-brand-surface"
                 : "border-border-card bg-surface-card"
             }`}
@@ -66,7 +88,7 @@ export function StateSheet({ deviceName, duration, isOnline, onSave, onDiscard }
         ))}
 
         <button
-          onClick={() => onSave(selected)}
+          onClick={handleSave}
           className="w-full rounded-2xl bg-ink text-white font-bold text-lg py-4 mt-1"
         >
           {isOnline ? "Enviar sesión" : "Guardar sesión"}
