@@ -18,7 +18,7 @@ export function SessionPage() {
   const [showSheet, setShowSheet] = useState(false);
 
   const { isOnline } = useConnectivity();
-  const { enqueue } = useOfflineQueue();
+  const { enqueue, pendingCount } = useOfflineQueue();
 
   function handleToggle() {
     if (!isRunning) {
@@ -77,7 +77,7 @@ export function SessionPage() {
         </div>
       </div>
 
-      <ConnectivityBanner isOnline={isOnline} />
+      <ConnectivityBanner isOnline={isOnline} pendingCount={pendingCount} />
 
       <div className="flex-1 flex flex-col items-center justify-center gap-4">
         <div className="flex items-center gap-2">
