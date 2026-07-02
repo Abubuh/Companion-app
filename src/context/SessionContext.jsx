@@ -49,6 +49,13 @@ export function SessionProvider({ children }) {
       }
       return prev;
     });
+
+    return () => {
+      for (const id of Object.keys(intervals.current)) {
+        clearInterval(intervals.current[id]);
+        delete intervals.current[id];
+      }
+    };
   }, []);
 
   const startSession = useCallback((deviceId) => {
