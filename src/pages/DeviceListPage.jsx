@@ -17,7 +17,7 @@ export function DeviceListPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    isLoading && fetchDevices().then((data) => {
+    fetchDevices().then((data) => {
       setDevices(data);
       setIsLoading(false);
     });

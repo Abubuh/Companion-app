@@ -50,10 +50,11 @@ export function SessionProvider({ children }) {
       return prev;
     });
 
+    const currentIntervals = intervals.current;
     return () => {
-      for (const id of Object.keys(intervals.current)) {
-        clearInterval(intervals.current[id]);
-        delete intervals.current[id];
+      for (const id of Object.keys(currentIntervals)) {
+        clearInterval(currentIntervals[id]);
+        delete currentIntervals[id];
       }
     };
   }, []);
