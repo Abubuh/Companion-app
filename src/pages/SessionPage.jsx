@@ -7,17 +7,12 @@ import { useSession } from "../context/SessionContext";
 import { useConnectivity } from "../hooks/useConnectivity";
 import { useOfflineQueue } from "../hooks/useOfflineQueue";
 import { submitSession } from "../api/sessions.api";
-
-const DEVICES = {
-  "kit-01": { name: "Kit-01", description: "Escáner LiDAR · v2" },
-  "kit-02": { name: "Kit-02", description: "Cámara RGB · v3" },
-  "kit-03": { name: "Kit-03", description: "GPS-RTK · v1" },
-};
+import { findDevice } from "../api/devices.api";
 
 export function SessionPage() {
   const { deviceId } = useParams();
   const navigate = useNavigate();
-  const device = DEVICES[deviceId];
+  const device = findDevice(deviceId);
 
   const { seconds, isRunning, startedAt, startSession, stopSession, clearSession } = useSession(deviceId);
   const [showSheet, setShowSheet] = useState(false);
