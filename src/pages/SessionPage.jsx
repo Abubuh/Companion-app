@@ -44,7 +44,12 @@ export function SessionPage() {
     };
 
     if (isOnline) {
-      await submitSession(payload);
+      try {
+        await submitSession(payload);
+      } catch (error) {
+        console.error("[POST /api/v1/sessions] Error, guardando en cola:", error);
+        enqueue(payload);
+      }
     } else {
       enqueue(payload);
     }
