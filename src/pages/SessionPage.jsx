@@ -5,6 +5,7 @@ import { Timer } from "../components/ui/Timer";
 import { StateSheet } from "../components/StateSheet";
 import { useSession } from "../context/SessionContext";
 import { useConnectivity } from "../hooks/useConnectivity";
+import { submitSession } from "../api/sessions.api";
 
 const DEVICES = {
   "kit-01": { name: "Kit-01", description: "Escáner LiDAR · v2" },
@@ -31,15 +32,14 @@ export function SessionPage() {
     }
   }
 
-  function handleSave(incidentType) {
-    const payload = {
-      device_id: deviceId,
-      started_at: startedAt,
-      ended_at: new Date().toISOString(),
-      duration_seconds: seconds,
+  async function handleSave(incidentType) {
+    await submitSession({
+      deviceId,
+      startedAt,
+      endedAt: new Date().toISOString(),
+      durationSeconds: seconds,
       status: incidentType,
-    };
-    console.log("[POST /api/v1/sessions] Payload:", JSON.stringify(payload, null, 2));
+    });
     clearSession();
     setShowSheet(false);
     navigate("/");

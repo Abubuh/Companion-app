@@ -1,21 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ConnectivityBanner } from "../components/ui/ConnectivityBanner";
 import { DeviceCard } from "../components/DeviceCard";
 import { useSession } from "../context/SessionContext";
 import { useConnectivity } from "../hooks/useConnectivity";
-
-const DEVICES = [
-  { id: "kit-01", name: "Kit-01", description: "Escáner LiDAR · v2" },
-  { id: "kit-02", name: "Kit-02", description: "Cámara RGB · v3" },
-  { id: "kit-03", name: "Kit-03", description: "GPS-RTK · v1" },
-];
+import { fetchDevices } from "../api/devices.api";
 
 export function DeviceListPage() {
+  const [devices, setDevices] = useState([]);
   const [selected, setSelected] = useState(null);
   const navigate = useNavigate();
   const { allSessions } = useSession();
   const { isOnline } = useConnectivity();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    isLoading && fetchDevices().then((data) => {
+      setDevices(data);
+      setIsLoading(false);
+    });
+  }, []);
 
   return (
     <div className="flex flex-col h-dvh w-full px-10 pb-4 pt-10">
@@ -23,9 +27,16 @@ export function DeviceListPage() {
       <p className="text-lg text-ink-subtle mb-3">Selecciona un kit para empezar</p>
 
       <ConnectivityBanner isOnline={isOnline} />
-
+    
       <div className="flex-1 overflow-y-auto">
-        {DEVICES.map((device) => (
+        {
+          isLoading && (
+            <div className="flex flex-col items-center justify-center h-full">
+              <p className="text-lg text-ink-subtle">Cargando equipos...</p>
+            </div>
+          ) 
+        }
+        {devices.map((device) => (
           <DeviceCard
             key={device.id}
             device={device}
