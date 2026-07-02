@@ -83,7 +83,7 @@ export function SessionProvider({ children }) {
     setSessions((prev) => {
       const updated = {
         ...prev,
-        [deviceId]: { ...prev[deviceId], isRunning: false },
+        [deviceId]: { ...prev[deviceId], isRunning: false, isPendingReview: true },
       };
       persistSessions(updated);
       return updated;

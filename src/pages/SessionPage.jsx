@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ConnectivityBanner } from "../components/ui/ConnectivityBanner";
 import { Timer } from "../components/ui/Timer";
@@ -14,9 +14,13 @@ export function SessionPage() {
   const navigate = useNavigate();
   const device = findDevice(deviceId);
 
-  const { seconds, isRunning, startedAt, startSession, stopSession, clearSession } = useSession(deviceId);
+  const { seconds, isRunning, startedAt, isPendingReview, startSession, stopSession, clearSession } = useSession(deviceId);
   const [showSheet, setShowSheet] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    if (isPendingReview) setShowSheet(true);
+  }, [isPendingReview]);
 
   const { isOnline } = useConnectivity();
   const { enqueue, pendingCount } = useOfflineQueue();
